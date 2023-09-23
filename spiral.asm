@@ -287,6 +287,7 @@ write_spiral_part:
     cmp eax, 1
     je first_part_bool_true
         mov r8d, [second_part_height]
+        dec r8d
         mov r9d, 0
         mov eax, 0
         mov [outer_loop_start], eax
