@@ -43,6 +43,31 @@ section .bss
     gap DD ?
 
 section .text
+
+;;;;;;;;;;
+;   Macros
+;;;;;;;;;;
+
+%macro print 2
+    ; print!("{}", %1);
+    mov eax, 4                      ; sys_write system call
+    mov ebx, 1                      ; stdout file descriptor
+    mov ecx, %1                     ; bytes to write
+    mov edx, %2                     ; number of bytes to write
+    int 0x80                        ; perform system call
+%endmacro
+
+%macro return 1
+    ; return %1;
+    mov eax, 1                      ; sys_exit system call
+    mov ebx, %1                     ; exit status is %1
+    int 0x80                        ; perform system call
+%endmacro
+
+;;;;;;;;;;;;;;
+;   End Macros
+;;;;;;;;;;;;;;
+
 _start:
 
     ; https://gist.github.com/Gydo194/730c1775f1e05fdca6e9b0c175636f5b?permalink_comment_id=4396982#gistcomment-4396982
@@ -103,24 +128,9 @@ top:
     ; call write_spiral_recursion
 
 
-    mov eax, 1      ; sys_exit system call
-    mov ebx, 0      ; exit status is 0
-    int 0x80        ; perform system call
+    return 0
 
 
-
-;;;;;;;;;;
-;   Macros
-;;;;;;;;;;
-
-%macro print 2
-    ; print!("{}", %1);
-    mov eax, 4                          ; sys_write system call
-    mov ebx, 1                          ; stdout file descriptor
-    mov ecx, %1                         ; bytes to write
-    mov edx, %2                         ; number of bytes to write
-    int 0x80                            ; perform system call
-%endmacro
 
 
 ;;;;;;;;;;;;;;
@@ -189,9 +199,7 @@ atoi:
 
         print msg_parse_number_error, len_msg_parse_number_error
 
-        mov eax, 1                                  ; sys_exit system call
-        mov ebx, 1                                  ; exit status is 1
-        int 0x80                                    ; perform system call
+        return 1
 
     done:
         ret
@@ -203,18 +211,14 @@ error_too_many_arguments:
 
     print msg_show_usage, len_msg_show_usage
 
-    mov eax, 1      ; sys_exit system call
-    mov ebx, 1      ; exit status is 1
-    int 0x80        ; perform system call
+    return 1
 
 
 
 show_usage:
     print msg_show_usage, len_msg_show_usage
 
-    mov eax, 1      ; sys_exit system call
-    mov ebx, 2      ; exit status is 2
-    int 0x80        ; perform system call
+    return 2
 
 
 
@@ -222,11 +226,11 @@ strlen:
     xor   eax, eax
 s_loop:
     cmp   byte [rdi], 0
-    je    return
+    je    return_
     inc   rdi
     inc   rax
     jmp   s_loop
-return:
+return_:
     ret
 
 
