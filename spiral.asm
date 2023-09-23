@@ -109,6 +109,20 @@ top:
 
 
 
+;;;;;;;;;;
+;   Macros
+;;;;;;;;;;
+
+%macro print 2
+    ; print!("{}", %1);
+    mov eax, 4                          ; sys_write system call
+    mov ebx, 1                          ; stdout file descriptor
+    mov ecx, %1                         ; bytes to write
+    mov edx, %2                         ; number of bytes to write
+    int 0x80                            ; perform system call
+%endmacro
+
+
 ;;;;;;;;;;;;;;
 ;   Procedures
 ;;;;;;;;;;;;;;
@@ -173,11 +187,7 @@ atoi:
 
     error_:
 
-        mov eax, 4                                  ; sys_write system call
-        mov ebx, 1                                  ; stdout file descriptor
-        mov ecx, msg_parse_number_error             ; bytes to write
-        mov edx, len_msg_parse_number_error         ; number of bytes to write
-        int 0x80                                    ; perform system call
+        print msg_parse_number_error, len_msg_parse_number_error
 
         mov eax, 1                                  ; sys_exit system call
         mov ebx, 1                                  ; exit status is 1
@@ -189,18 +199,9 @@ atoi:
 
 
 error_too_many_arguments:
-    ; println!("too many arguments\n program size gap");
-    mov eax, 4                                          ; sys_write system call
-    mov ebx, 1                                          ; stdout file descriptor
-    mov ecx, msg_error_too_many_arguments               ; bytes to write
-    mov edx, len_msg_error_too_many_arguments           ; number of bytes to write
-    int 0x80                                            ; perform system call
+    print msg_error_too_many_arguments, len_msg_error_too_many_arguments
 
-    mov eax, 4                                          ; sys_write system call
-    mov ebx, 1                                          ; stdout file descriptor
-    mov ecx, msg_show_usage                             ; bytes to write
-    mov edx, len_msg_show_usage                         ; number of bytes to write
-    int 0x80                                            ; perform system call
+    print msg_show_usage, len_msg_show_usage
 
     mov eax, 1      ; sys_exit system call
     mov ebx, 1      ; exit status is 1
@@ -209,11 +210,7 @@ error_too_many_arguments:
 
 
 show_usage:
-    mov eax, 4                                          ; sys_write system call
-    mov ebx, 1                                          ; stdout file descriptor
-    mov ecx, msg_show_usage                             ; bytes to write
-    mov edx, len_msg_show_usage                         ; number of bytes to write
-    int 0x80                                            ; perform system call
+    print msg_show_usage, len_msg_show_usage
 
     mov eax, 1      ; sys_exit system call
     mov ebx, 2      ; exit status is 2
@@ -368,12 +365,7 @@ write_spiral_part:
             jge end_outer_loop
 
 
-            ; print "# "
-            mov eax, 4                      ; sys_write system call
-            mov ebx, 1                      ; stdout file descriptor
-            mov ecx, hashtag_space          ; bytes to write
-            mov edx, hashtag_space_len      ; number of bytes to write
-            int 0x80                        ; perform system call
+            print hashtag_space, hashtag_space_len
 
             mov ebp, 1
             mov edi, [gap]
@@ -381,12 +373,7 @@ write_spiral_part:
             cmp ebp, edi                    ; Compare ebp with edi
             jge end_inner_loop
 
-            ; print "  "
-            mov eax, 4                      ; sys_write system call
-            mov ebx, 1                      ; stdout file descriptor
-            mov ecx, space_space            ; bytes to write
-            mov edx, space_space_len        ; number of bytes to write
-            int 0x80                        ; perform system call
+            print space_space, space_space_len
 
             inc ebp                         ; ebp += 1
             jmp inner_loop
@@ -433,12 +420,7 @@ write_spiral_part:
                 cmp ebp, edi
                 jge end_outer_loop_2
 
-                ; print "  "
-                mov eax, 4                      ; sys_write system call
-                mov ebx, 1                      ; stdout file descriptor
-                mov ecx, space_space            ; bytes to write
-                mov edx, space_space_len        ; number of bytes to write
-                int 0x80                        ; perform system call
+                print space_space, space_space_len
 
                 inc ebp                         ; ebp += 1
                 jmp outer_loop_2
@@ -446,12 +428,7 @@ write_spiral_part:
             end_outer_loop_2:
 
 
-            ; print "# "
-            mov eax, 4                          ; sys_write system call
-            mov ebx, 1                          ; stdout file descriptor
-            mov ecx, hashtag_space              ; bytes to write
-            mov edx, hashtag_space_len          ; number of bytes to write
-            int 0x80                            ; perform system call
+            print hashtag_space, hashtag_space_len
 
 
         jmp both2
@@ -462,12 +439,7 @@ write_spiral_part:
                 cmp ebp, edi
                 jge end_outer_loop_3
 
-                ; print "# "
-                mov eax, 4                      ; sys_write system call
-                mov ebx, 1                      ; stdout file descriptor
-                mov ecx, hashtag_space          ; bytes to write
-                mov edx, hashtag_space_len      ; number of bytes to write
-                int 0x80                        ; perform system call
+                print hashtag_space, hashtag_space_len
 
                 inc ebp                         ; ebp += 1
                 jmp outer_loop_3
@@ -490,12 +462,7 @@ write_spiral_part:
             cmp ebp, edi
             jge end_inner_loop_2
 
-            ; print "  "
-            mov eax, 4                          ; sys_write system call
-            mov ebx, 1                          ; stdout file descriptor
-            mov ecx, space_space                ; bytes to write
-            mov edx, space_space_len            ; number of bytes to write
-            int 0x80                            ; perform system call
+            print space_space, space_space_len
 
             inc ebp                             ; ebp += 1
             jmp inner_loop_2
@@ -503,12 +470,7 @@ write_spiral_part:
         end_inner_loop_2:
 
 
-            ; print "# "
-            mov eax, 4                          ; sys_write system call
-            mov ebx, 1                          ; stdout file descriptor
-            mov ecx, hashtag_space              ; bytes to write
-            mov edx, hashtag_space_len          ; number of bytes to write
-            int 0x80                            ; perform system call
+            print hashtag_space, hashtag_space_len
 
 
             mov eax, [index]
@@ -519,12 +481,7 @@ write_spiral_part:
         end_outer_loop_4:
 
 
-        ; print "\n"
-        mov eax, 4                              ; sys_write system call
-        mov ebx, 1                              ; stdout file descriptor
-        mov ecx, newline                        ; bytes to write
-        mov edx, newline_len                    ; number of bytes to write
-        int 0x80                                ; perform system call
+        print newline, newline_len
 
 
         mov eax, [first_part_bool]
